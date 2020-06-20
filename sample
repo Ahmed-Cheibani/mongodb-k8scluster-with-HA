@@ -1,0 +1,5 @@
+bash: -c: line 0: syntax error near unexpected token `('
+bash: -c: line 0: `mongo rs.status()'
+bash: -c: line 0: syntax error near unexpected token `('
+bash: -c: line 0: `mongo rs.status()'
+bash: -c: line 0: syntax error near unexpected token `(' bash: -c: line 0: `mongo rs.status()'

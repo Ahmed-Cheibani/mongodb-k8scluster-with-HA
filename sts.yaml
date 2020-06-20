@@ -1,0 +1,39 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: mongo
+spec:
+  serviceName: mongo
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      terminationGracePeriodSeconds: 10
+      volumes:
+       - name: opstree-volume
+         persistentVolumeClaim:
+          claimName: opstree-vol-claim
+      containers:
+        - name: mongo
+          image: mongo  
+          command: 
+          - mongod 
+          - "--bind_ip_all"
+          - "--replSet"
+          - rs0          
+        # resources:
+          #limits:
+           #cpu: 50m
+           #memory: 1Gi
+          #requests:
+           #cpu: 20m
+           #memory: 1Gi
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: opstree-volume
+              mountPath: /opt/db
+       
+        
