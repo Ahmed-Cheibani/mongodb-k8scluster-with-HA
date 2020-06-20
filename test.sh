@@ -10,5 +10,5 @@ do
         #kubectl get pods
 	echo "Welcome $id times"
         
-        a=$(( a+1 ))     # increments $n
+        a=$(( a+1 ))     # increments $a
 done
