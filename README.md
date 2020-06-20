@@ -21,20 +21,47 @@ To create MongoDB pods its recommended to use Stateful sets instead of replicase
 7. after entering type mongo which makes you enter into mongo client where you execute mongo cmds
 >mongo
 8. check status of replicaset
-rs0:rs.status()
+>rs.status()
 9. initiate replicaset
-rs0:rs.initiate()
+>rs.initiate()
 10.store replicaset configurations into cfg variable
-11.add members(pods) to conf’s
-12.refresh replicaset
+>var cfg = rs.conf()
+11.add members to host
+>cfg.members[0].host="mongo-0.mongo:27017"
+12.refresh the configuration
+>rs.reconfig(cfg)
 13.add remaining pod as members of replicaset which acts as SECONDARY pods
+>rs.add("mongo-1.mongo:27017")
+>rs.add("mongo-2.mongo:27017")
 14.check replicaset status. Now all pods are in replication to PRIMARY pod
+rs.status()
 If we scale the pods , we need to add scaled pods as members in replicaset.
 To check members which are in replicasets
 >mongo mongodb://mongo-0.mongo,mongo-1.mongo,mongo-2.mongo --eval 'rs.status()' | grep name
-now increase pods to 4
-kubectl scale sts mongo --replicas 4
+now increase pods to 4, to do that exit the pod like typing exit(leave from mongo client) again type exit(leave from pod). now you are on server
+>kubectl scale sts mongo --replicas 4  
 To add 4th pod into replication then switch to PRIMARY pod and add 4th pod as member
-Switch to mongo client
-rs.add("mongo-3.mongo:27017")
+enter inside pod kubectl exec -it mongo-0 bash 
+now you are inside pod
+Switch to mongo client,type mongo
+>rs.add("mongo-3.mongo:27017")
 Note: Number pods to be scaled up/down = number pods should be added/removed as members in PRIMARY pod manually.
+now check replicasets. exit the mongo client. and type 
+>mongo mongodb://mongo-0.mongo,mongo-1.mongo,mongo-2.mongo --eval 'rs.status()' | grep name
+you can see 
+                        "name" : "mongo-0.mongo:27017",
+                        "name" : "mongo-1.mongo:27017",
+                        "name" : "mongo-2.mongo:27017",
+                        "name" : "mongo-3.mongo:27017",
+ 15.now, Autoscale the pods based on cpu  utilization or you can create yaml file using horizontalpodscaler service(all yaml files are available in github repo. please check)
+ >kubectl autoscale sts mongo --cpu-percent=50 --min=1 --max=10
+ 16. increase the load inside the pod
+ by entering multiple times until load goes above given condition(better to give --cpu-percent below 10 to check pod scaling)
+yes > /dev/null &
+or you can also increase load below script while true; do printf .;done>>~/text(run inside the pod)
+or if you want to monitor the cpu utilization without goes inside pod enter below command
+kubectl exec -it  pod -- bash -c "while true; do printf .;done>>~/text
+and now you check pods scaling 
+kubectl get pods
+or you want monitor scaling then
+watch kubectl get pods
