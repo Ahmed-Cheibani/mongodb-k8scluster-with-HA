@@ -38,7 +38,7 @@ rs.status()
 If we scale the pods , we need to add scaled pods as members in replicaset.
 To check members which are in replicasets
 >mongo mongodb://mongo-0.mongo,mongo-1.mongo,mongo-2.mongo --eval 'rs.status()' | grep name
-now increase pods to 4, to do that exit the pod like typing exit(leave from mongo client) again type exit(leave from pod). now you are on server
+now increase pods to 4, to do that exit the pod like typing exit(leave from mongo client) again type exit(leave from pod).or shortcut cmd is:ctrl+p+q. now you are on server
 >kubectl scale sts mongo --replicas 4  
 To add 4th pod into replication then switch to PRIMARY pod and add 4th pod as member
 enter inside pod kubectl exec -it mongo-0 bash 
