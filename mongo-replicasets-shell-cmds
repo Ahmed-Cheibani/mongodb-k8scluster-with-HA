@@ -1,0 +1,24 @@
+mongodb replication setup run inside the mongo shell/client
+rs.initiate()
+var cfg = rs.conf()
+cfg.members[0].host="mongo-0.mongo:27017"
+rs.reconfig(cfg)
+rs.status()
+rs.add("mongo-1.mongo:27017")
+rs.add("mongo-2.mongo:27017")
+rs.status()
+ from pod1 do below (without getting into mongo shell goto pod 1)
+ mongo mongodb://mongo-0.mongo,mongo-1.mongo,mongo-2.mongo
+ 
+to check how many number of pods in replication
+mongo mongodb://mongo-0.mongo,mongo-1.mongo,mongo-2.mongo --eval 'rs.status()' | grep name
+
+now scale the pods to 4(run this cmd after exit from pod) if you inside mongo shell/client type exit,now you are at pod then again type exit.
+instead of these steps just use ctrl+p+q shortcut key to exit from pod.now you are at server. then type below cmd
+kubectl scale sts mongo --replicas 4
+but scaled pods need to be added manually
+rs.add("mongo-3.mongo:27017")
+
+autoscale based on load, then run below cmd
+kubectl autoscale sts mongo --cpu-percent=50 --min=1 --max=10
+
